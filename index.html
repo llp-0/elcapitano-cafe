@@ -8,93 +8,177 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js للرسوم البيانية -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- خط Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-        body { font-family: 'Cairo', sans-serif; }
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: #0f172a;
+        }
+        
+        /* Smooth Transitions & Custom Scrollbar */
+        * {
+            transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f59e0b;
+        }
+
+        /* Glassmorphism Card Style */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(245, 158, 11, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Modal Animation */
+        .modal-fade {
+            animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-6">
+<body class="text-slate-100 min-h-screen p-3 md:p-6 pb-12 selection:bg-amber-500 selection:text-slate-900">
 
-    <div class="max-w-6xl mx-auto space-y-8">
-        <!-- العنوان والساعة -->
-        <header class="flex flex-col md:flex-row justify-between items-center border-b border-slate-800 pb-4 gap-4">
-            <div>
-                <h1 class="text-3xl font-bold text-amber-500">☕ إدارة مقهى ELCAPITANO</h1>
-                <p class="text-slate-400 text-sm mt-1">نظام متزامن سحابياً فورياً بين اللابتوب والهاتف</p>
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header Section -->
+        <header class="glass-card rounded-2xl p-5 flex flex-col md:flex-row justify-between items-center gap-4 border border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-center text-amber-500 text-2xl font-bold shadow-inner">
+                    ☕
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold bg-gradient-to-l from-amber-400 via-amber-500 to-amber-200 bg-clip-text text-transparent">
+                        مقهى ELCAPITANO
+                    </h1>
+                    <p class="text-slate-400 text-xs md:text-sm mt-0.5">نظام إدارة سحابي متزامن فورياً</p>
+                </div>
             </div>
-            <div id="live-clock" class="text-lg font-semibold bg-slate-800 px-4 py-2 rounded-lg border border-slate-700"></div>
+            <div id="live-clock" class="text-xs md:text-sm font-semibold bg-slate-900/80 px-4 py-2 rounded-xl border border-slate-800 text-amber-400/90 tracking-wide"></div>
         </header>
 
-        <!-- التنقل بين الأقسام -->
-        <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4">
-            <button onclick="switchTab('sales-section')" id="btn-sales" class="px-5 py-2.5 rounded-lg font-bold bg-amber-600 text-white transition">📊 قسم المبيعات</button>
-            <button onclick="switchTab('chart-section')" id="btn-chart" class="px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">📈 الرسم البياني للمبيعات</button>
-            <button onclick="switchTab('debts-section')" id="btn-debts" class="px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">📒 قسم الدين</button>
-            <button onclick="switchTab('prices-section')" id="btn-prices" class="px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">⚙️ إدارة الأسعار والسلع</button>
-        </div>
+        <!-- Navigation Tabs -->
+        <nav class="flex flex-wrap gap-2 bg-slate-900/60 p-1.5 rounded-2xl border border-slate-800/80">
+            <button onclick="switchTab('sales-section')" id="btn-sales" class="nav-btn active flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2">
+                <span>📊</span> <span>المبيعات</span>
+            </button>
+            <button onclick="switchTab('chart-section')" id="btn-chart" class="nav-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2">
+                <span>📈</span> <span>التحليل البياني</span>
+            </button>
+            <button onclick="switchTab('debts-section')" id="btn-debts" class="nav-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2">
+                <span>📒</span> <span>دفتر الديون</span>
+            </button>
+            <button onclick="switchTab('prices-section')" id="btn-prices" class="nav-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2">
+                <span>⚙️</span> <span>الأسعار والسلع</span>
+            </button>
+        </nav>
 
-        <!-- لوحة المؤشرات السريعة -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
-                <p class="text-sm text-slate-400">مبيعات اليوم</p>
-                <h3 id="daily-sales" class="text-2xl font-bold text-emerald-400 mt-2">$0.00</h3>
+        <!-- Dynamic KPI Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div class="glass-card p-4 rounded-2xl border border-slate-800 relative overflow-hidden group">
+                <div class="absolute -left-2 -bottom-2 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
+                <p class="text-xs text-slate-400 font-medium">مبيعات اليوم</p>
+                <h3 id="daily-sales" class="text-xl md:text-2xl font-black text-emerald-400 mt-1.5">$0.00</h3>
             </div>
-            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
-                <p class="text-sm text-slate-400">مبيعات الأسبوع</p>
-                <h3 id="weekly-sales" class="text-2xl font-bold text-blue-400 mt-2">$0.00</h3>
+            <div class="glass-card p-4 rounded-2xl border border-slate-800 relative overflow-hidden group">
+                <div class="absolute -left-2 -bottom-2 w-16 h-16 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all"></div>
+                <p class="text-xs text-slate-400 font-medium">مبيعات الأسبوع</p>
+                <h3 id="weekly-sales" class="text-xl md:text-2xl font-black text-blue-400 mt-1.5">$0.00</h3>
             </div>
-            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
-                <p class="text-sm text-slate-400">مبيعات الشهر</p>
-                <h3 id="monthly-sales" class="text-2xl font-bold text-purple-400 mt-2">$0.00</h3>
+            <div class="glass-card p-4 rounded-2xl border border-slate-800 relative overflow-hidden group">
+                <div class="absolute -left-2 -bottom-2 w-16 h-16 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition-all"></div>
+                <p class="text-xs text-slate-400 font-medium">مبيعات الشهر</p>
+                <h3 id="monthly-sales" class="text-xl md:text-2xl font-black text-purple-400 mt-1.5">$0.00</h3>
             </div>
-            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
-                <p class="text-sm text-slate-400">إجمالي الدين المعلق</p>
-                <h3 id="total-debts" class="text-2xl font-bold text-rose-400 mt-2">$0.00</h3>
+            <div class="glass-card p-4 rounded-2xl border border-slate-800 relative overflow-hidden group">
+                <div class="absolute -left-2 -bottom-2 w-16 h-16 bg-rose-500/10 rounded-full blur-xl group-hover:bg-rose-500/20 transition-all"></div>
+                <p class="text-xs text-slate-400 font-medium">إجمالي الديون</p>
+                <h3 id="total-debts" class="text-xl md:text-2xl font-black text-rose-400 mt-1.5">$0.00</h3>
             </div>
         </div>
 
         <!-- ================= قسم المبيعات ================= -->
         <div id="sales-section" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-1">
-                    <h2 class="text-xl font-bold text-amber-400">🛒 تسجيل عملية بيع</h2>
-                    <form id="sale-form" class="space-y-4">
+                <!-- Form Add Sale -->
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4 lg:col-span-1 h-fit">
+                    <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                        <span>🛒</span> <span>تسجيل بيع جديد</span>
+                    </h2>
+                    <form id="sale-form" class="space-y-3.5">
                         <div>
-                            <label class="block text-sm text-slate-300 mb-1">اختر الصنف</label>
-                            <select id="item-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100"></select>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">اختر الصنف</label>
+                            <select id="item-select" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition-colors"></select>
                         </div>
                         <div>
-                            <label class="block text-sm text-slate-300 mb-1">الكمية</label>
-                            <input type="number" id="item-qty" min="1" value="1" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">الكمية</label>
+                            <input type="number" id="item-qty" min="1" value="1" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition-colors">
                         </div>
-                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 rounded-lg transition">إتمام البيع</button>
+                        <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-2.5 rounded-xl transition shadow-lg shadow-amber-500/10 transform active:scale-95">
+                            إتمام عملية البيع
+                        </button>
                     </form>
                 </div>
 
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-2">
-                    <h3 class="text-lg font-bold text-slate-200">📊 سجل المبيعات اللحظي (بالساعة والدقيقة)</h3>
-                    <div class="overflow-x-auto max-h-96">
+                <!-- Sales History Table -->
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4 lg:col-span-2">
+                    <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                        <span>📊</span> <span>سجل المبيعات اللحظي</span>
+                    </h3>
+                    <div class="overflow-x-auto max-h-[420px] rounded-xl border border-slate-800">
                         <table class="w-full text-right text-sm text-slate-300">
-                            <thead class="bg-slate-700 text-amber-400 uppercase">
+                            <thead class="bg-slate-900/80 text-amber-400 text-xs font-bold uppercase sticky top-0 backdrop-blur-md">
                                 <tr>
-                                    <th class="p-2">الصنف</th>
-                                    <th class="p-2">الكمية</th>
-                                    <th class="p-2">الإجمالي</th>
-                                    <th class="p-2">التوقيت (ساعة/دقيقة)</th>
+                                    <th class="p-3">الصنف</th>
+                                    <th class="p-3">الكمية</th>
+                                    <th class="p-3">الإجمالي</th>
+                                    <th class="p-3">التوقيت</th>
+                                    <th class="p-3 text-center">الإجراء</th>
                                 </tr>
                             </thead>
-                            <tbody id="sales-table-body"></tbody>
+                            <tbody id="sales-table-body" class="divide-y divide-slate-800/60"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= قسم الرسم البياني للمبيعات ================= -->
-        <div id="chart-section" class="tab-content hidden space-y-6">
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4">
-                <h2 class="text-xl font-bold text-amber-400">📈 تحليل المبيعات (أين كانت أشدها وأقلها)</h2>
-                <div class="w-full h-96 flex justify-center items-center">
+        <!-- ================= قسم الرسم البياني ================= -->
+        <div id="chart-section" class="tab-content hidden">
+            <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+                <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                    <span>📈</span> <span>تحليل أداء المبيعات وحركة السلع</span>
+                </h2>
+                <div class="w-full h-80 md:h-96">
                     <canvas id="salesChart"></canvas>
                 </div>
             </div>
@@ -103,34 +187,40 @@
         <!-- ================= قسم الدين ================= -->
         <div id="debts-section" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-1">
-                    <h2 class="text-xl font-bold text-rose-400">📝 دفتر تسجيل الدين</h2>
-                    <form id="debt-form" class="space-y-4">
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4 lg:col-span-1 h-fit">
+                    <h2 class="text-lg font-bold text-rose-400 flex items-center gap-2">
+                        <span>📝</span> <span>تسجيل دين جديد</span>
+                    </h2>
+                    <form id="debt-form" class="space-y-3.5">
                         <div>
-                            <label class="block text-sm text-slate-300 mb-1">اسم الزبون</label>
-                            <input type="text" id="debtor-name" placeholder="اسم الزبون..." required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">اسم الزبون</label>
+                            <input type="text" id="debtor-name" placeholder="مثال: أبو علي" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-500 transition-colors">
                         </div>
                         <div>
-                            <label class="block text-sm text-slate-300 mb-1">قيمة الدين ($)</label>
-                            <input type="number" step="0.01" id="debt-amount" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">قيمة الدين ($)</label>
+                            <input type="number" step="0.01" id="debt-amount" placeholder="0.00" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-500 transition-colors">
                         </div>
-                        <button type="submit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-lg transition">تسجيل الدين</button>
+                        <button type="submit" class="w-full bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-bold py-2.5 rounded-xl transition shadow-lg shadow-rose-600/10 transform active:scale-95">
+                            حفظ الدين
+                        </button>
                     </form>
                 </div>
 
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-2">
-                    <h3 class="text-lg font-bold text-slate-200">📒 قائمة الديون المعلقة على الزبائن</h3>
-                    <div class="overflow-x-auto max-h-96">
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4 lg:col-span-2">
+                    <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                        <span>📒</span> <span>سجل الديون المعلقة</span>
+                    </h3>
+                    <div class="overflow-x-auto max-h-[420px] rounded-xl border border-slate-800">
                         <table class="w-full text-right text-sm text-slate-300">
-                            <thead class="bg-slate-700 text-rose-400 uppercase">
+                            <thead class="bg-slate-900/80 text-rose-400 text-xs font-bold uppercase sticky top-0 backdrop-blur-md">
                                 <tr>
-                                    <th class="p-2">اسم الزبون</th>
-                                    <th class="p-2">المبلغ</th>
-                                    <th class="p-2">التاريخ والتوقيت</th>
-                                    <th class="p-2">إجراء</th>
+                                    <th class="p-3">اسم الزبون</th>
+                                    <th class="p-3">المبلغ</th>
+                                    <th class="p-3">التاريخ والتوقيت</th>
+                                    <th class="p-3 text-center">الإجراء</th>
                                 </tr>
                             </thead>
-                            <tbody id="debts-table-body"></tbody>
+                            <tbody id="debts-table-body" class="divide-y divide-slate-800/60"></tbody>
                         </table>
                     </div>
                 </div>
@@ -140,33 +230,39 @@
         <!-- ================= قسم إدارة الأسعار والسلع ================= -->
         <div id="prices-section" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-1">
-                    <h2 class="text-xl font-bold text-emerald-400">➕ إضافة أو تعديل سعر صنف</h2>
-                    <form id="price-form" class="space-y-4">
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4 lg:col-span-1 h-fit">
+                    <h2 class="text-lg font-bold text-emerald-400 flex items-center gap-2">
+                        <span>➕</span> <span>إضافة / تعديل سعر صنف</span>
+                    </h2>
+                    <form id="price-form" class="space-y-3.5">
                         <div>
-                            <label class="block text-sm text-slate-300 mb-1">اسم الصنف</label>
-                            <input type="text" id="new-item-name" placeholder="مثال: اسبريسو" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">اسم الصنف</label>
+                            <input type="text" id="new-item-name" placeholder="مثال: اسبريسو" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors">
                         </div>
                         <div>
-                            <label class="block text-sm text-slate-300 mb-1">السعر ($)</label>
-                            <input type="number" step="0.01" id="new-item-price" placeholder="2.00" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">السعر ($)</label>
+                            <input type="number" step="0.01" id="new-item-price" placeholder="2.00" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors">
                         </div>
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition">حفظ السعر والصنف</button>
+                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/10 transform active:scale-95">
+                            حفظ السعر
+                        </button>
                     </form>
                 </div>
 
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-2">
-                    <h3 class="text-lg font-bold text-slate-200">🏷️ قائمة السلع وأسعارها</h3>
-                    <div class="overflow-x-auto max-h-96">
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4 lg:col-span-2">
+                    <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                        <span>🏷️</span> <span>قائمة أصناف المقهى</span>
+                    </h3>
+                    <div class="overflow-x-auto max-h-[420px] rounded-xl border border-slate-800">
                         <table class="w-full text-right text-sm text-slate-300">
-                            <thead class="bg-slate-700 text-emerald-400 uppercase">
+                            <thead class="bg-slate-900/80 text-emerald-400 text-xs font-bold uppercase sticky top-0 backdrop-blur-md">
                                 <tr>
-                                    <th class="p-2">اسم الصنف</th>
-                                    <th class="p-2">السعر ($)</th>
-                                    <th class="p-2">إجراء</th>
+                                    <th class="p-3">اسم الصنف</th>
+                                    <th class="p-3">السعر ($)</th>
+                                    <th class="p-3 text-center">الإجراء</th>
                                 </tr>
                             </thead>
-                            <tbody id="prices-table-body"></tbody>
+                            <tbody id="prices-table-body" class="divide-y divide-slate-800/60"></tbody>
                         </table>
                     </div>
                 </div>
@@ -174,12 +270,36 @@
         </div>
     </div>
 
-    <!-- برمجة Firebase المباشرة السحابية -->
+    <!-- Modal نافذة تعديل عملية بيع -->
+    <div id="edit-sale-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card modal-fade max-w-md w-full p-6 rounded-2xl border border-slate-700 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-bold text-amber-400">✏️ تعديل عملية البيع</h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+            </div>
+            <form id="edit-sale-form" class="space-y-4">
+                <input type="hidden" id="edit-sale-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">اختر الصنف</label>
+                    <select id="edit-item-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">الكمية الجديده</label>
+                    <input type="number" id="edit-item-qty" min="1" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded-xl transition">حفظ التعديل</button>
+                    <button type="button" onclick="closeEditModal()" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded-xl transition">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Moudles -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // إعدادات مشروعك الخاصة
         const firebaseConfig = {
             apiKey: "AIzaSyA2DAG1j05Lkkjj-O2uswhBSeil-U6vQzI",
             authDomain: "elcapitano-cafe.firebaseapp.com",
@@ -193,7 +313,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // المراجع السحابية
         const salesCol = collection(db, "sales");
         const debtsCol = collection(db, "debts");
         const pricesCol = collection(db, "prices");
@@ -203,38 +322,31 @@
         let prices = [];
         let salesChart = null;
 
-        // الساعة الحية
         function updateClock() {
             const now = new Date();
-            document.getElementById('live-clock').innerText = now.toLocaleDateString('ar-LB') + ' - ' + now.toLocaleTimeString('ar-LB');
+            document.getElementById('live-clock').innerText = now.toLocaleDateString('ar-LB') + '  |  ' + now.toLocaleTimeString('ar-LB');
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // التبديل بين الشاشات
         window.switchTab = function(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
 
-            document.getElementById('btn-sales').className = "px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-            document.getElementById('btn-chart').className = "px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-            document.getElementById('btn-debts').className = "px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-            document.getElementById('btn-prices').className = "px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-
-            if(tabId === 'sales-section') document.getElementById('btn-sales').className = "px-5 py-2.5 rounded-lg font-bold bg-amber-600 text-white transition";
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            if(tabId === 'sales-section') document.getElementById('btn-sales').classList.add('active');
             if(tabId === 'chart-section') {
-                document.getElementById('btn-chart').className = "px-5 py-2.5 rounded-lg font-bold bg-amber-600 text-white transition";
+                document.getElementById('btn-chart').classList.add('active');
                 updateChart();
             }
-            if(tabId === 'debts-section') document.getElementById('btn-debts').className = "px-5 py-2.5 rounded-lg font-bold bg-rose-600 text-white transition";
-            if(tabId === 'prices-section') document.getElementById('btn-prices').className = "px-5 py-2.5 rounded-lg font-bold bg-emerald-600 text-white transition";
+            if(tabId === 'debts-section') document.getElementById('btn-debts').classList.add('active');
+            if(tabId === 'prices-section') document.getElementById('btn-prices').classList.add('active');
         };
 
-        // المزامنة اللحظية للأسعار من السحابة
+        // Firebase Sync - Prices
         onSnapshot(pricesCol, (snapshot) => {
             prices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             if (prices.length === 0) {
-                // الأسعار الافتراضية
                 const defaultItems = [
                     { name: "اسبريسو", price: 2.00 }, { name: "نسكافيه", price: 2.50 },
                     { name: "شاي", price: 1.50 }, { name: "زهورات", price: 2.00 },
@@ -247,7 +359,7 @@
             renderPrices();
         });
 
-        // المزامنة اللحظية للمبيعات من السحابة
+        // Firebase Sync - Sales
         onSnapshot(salesCol, (snapshot) => {
             sales = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             sales.sort((a, b) => new Date(b.dateString) - new Date(a.dateString));
@@ -255,7 +367,7 @@
             updateStats();
         });
 
-        // المزامنة اللحظية للديون من السحابة
+        // Firebase Sync - Debts
         onSnapshot(debtsCol, (snapshot) => {
             debts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderDebts();
@@ -265,23 +377,26 @@
         function renderPrices() {
             const tbody = document.getElementById('prices-table-body');
             const select = document.getElementById('item-select');
+            const editSelect = document.getElementById('edit-item-select');
             tbody.innerHTML = '';
             select.innerHTML = '';
+            editSelect.innerHTML = '';
 
             prices.forEach(p => {
                 tbody.innerHTML += `
-                    <tr class="border-b border-slate-700">
-                        <td class="p-2 font-medium">${p.name}</td>
-                        <td class="p-2 text-emerald-400">$${parseFloat(p.price).toFixed(2)}</td>
-                        <td class="p-2">
-                            <button onclick="deletePrice('${p.id}')" class="bg-rose-600 hover:bg-rose-500 text-white px-2 py-1 rounded text-xs">حذف</button>
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                        <td class="p-3 font-semibold text-slate-200">${p.name}</td>
+                        <td class="p-3 text-emerald-400 font-bold">$${parseFloat(p.price).toFixed(2)}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deletePrice('${p.id}')" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 px-2.5 py-1 rounded-lg text-xs transition">حذف</button>
                         </td>
                     </tr>`;
-                select.innerHTML += `<option value="${p.name}|${p.price}">${p.name} ($${parseFloat(p.price).toFixed(2)})</option>`;
+                const optionHtml = `<option value="${p.name}|${p.price}">${p.name} ($${parseFloat(p.price).toFixed(2)})</option>`;
+                select.innerHTML += optionHtml;
+                editSelect.innerHTML += optionHtml;
             });
         }
 
-        // حفظ صنف أو تعديل سعره سحابياً
         document.getElementById('price-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('new-item-name').value.trim();
@@ -294,7 +409,7 @@
             await deleteDoc(doc(pricesCol, id));
         };
 
-        // إضافة عملية بيع سحابياً
+        // Add Sale
         document.getElementById('sale-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const [name, price] = document.getElementById('item-select').value.split('|');
@@ -307,13 +422,58 @@
                 qty,
                 total,
                 dateString: now.toISOString(),
-                formattedTime: now.toLocaleTimeString('ar-LB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                formattedTime: now.toLocaleTimeString('ar-LB', { hour: '2-digit', minute: '2-digit' }),
                 formattedDate: now.toLocaleDateString('ar-LB')
             });
             e.target.reset();
         });
 
-        // إضافة دين سحابياً
+        // Edit & Delete Sales
+        window.openEditModal = function(id) {
+            const sale = sales.find(s => s.id === id);
+            if(!sale) return;
+
+            document.getElementById('edit-sale-id').value = id;
+            document.getElementById('edit-item-qty').value = sale.qty;
+            
+            const editSelect = document.getElementById('edit-item-select');
+            for (let option of editSelect.options) {
+                if (option.value.startsWith(sale.name)) {
+                    option.selected = true;
+                    break;
+                }
+            }
+
+            document.getElementById('edit-sale-modal').classList.remove('hidden');
+        };
+
+        window.closeEditModal = function() {
+            document.getElementById('edit-sale-modal').classList.add('hidden');
+        };
+
+        document.getElementById('edit-sale-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-sale-id').value;
+            const [name, price] = document.getElementById('edit-item-select').value.split('|');
+            const qty = parseInt(document.getElementById('edit-item-qty').value);
+            const total = qty * parseFloat(price);
+
+            await updateDoc(doc(salesCol, id), {
+                name,
+                qty,
+                total
+            });
+
+            closeEditModal();
+        });
+
+        window.deleteSale = async function(id) {
+            if(confirm("هل أنت تأكد من إلغاء عملية البيع هذه؟")) {
+                await deleteDoc(doc(salesCol, id));
+            }
+        };
+
+        // Add Debt
         document.getElementById('debt-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('debtor-name').value;
@@ -337,11 +497,15 @@
             tbody.innerHTML = '';
             sales.forEach(s => {
                 tbody.innerHTML += `
-                    <tr class="border-b border-slate-700">
-                        <td class="p-2 font-medium">${s.name}</td>
-                        <td class="p-2">${s.qty}</td>
-                        <td class="p-2 text-emerald-400">$${s.total.toFixed(2)}</td>
-                        <td class="p-2 text-slate-400 text-xs">${s.formattedDate} | ${s.formattedTime}</td>
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                        <td class="p-3 font-semibold text-slate-200">${s.name}</td>
+                        <td class="p-3 text-slate-300 font-medium">${s.qty}</td>
+                        <td class="p-3 text-emerald-400 font-bold">$${s.total.toFixed(2)}</td>
+                        <td class="p-3 text-slate-400 text-xs">${s.formattedDate} | ${s.formattedTime}</td>
+                        <td class="p-3 text-center space-x-1 space-x-reverse">
+                            <button onclick="openEditModal('${s.id}')" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 px-2 py-1 rounded-lg text-xs transition">تعديل</button>
+                            <button onclick="deleteSale('${s.id}')" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 px-2 py-1 rounded-lg text-xs transition">حذف</button>
+                        </td>
                     </tr>`;
             });
         }
@@ -351,12 +515,12 @@
             tbody.innerHTML = '';
             debts.forEach(d => {
                 tbody.innerHTML += `
-                    <tr class="border-b border-slate-700">
-                        <td class="p-2 font-medium">${d.name}</td>
-                        <td class="p-2 text-rose-400">$${d.amount.toFixed(2)}</td>
-                        <td class="p-2 text-slate-400 text-xs">${d.formattedTime}</td>
-                        <td class="p-2">
-                            <button onclick="deleteDebt('${d.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2 py-1 rounded text-xs">تم السداد</button>
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                        <td class="p-3 font-semibold text-slate-200">${d.name}</td>
+                        <td class="p-3 text-rose-400 font-bold">$${d.amount.toFixed(2)}</td>
+                        <td class="p-3 text-slate-400 text-xs">${d.formattedTime}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteDebt('${d.id}')" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-lg text-xs transition">تم السداد</button>
                         </td>
                     </tr>`;
             });
@@ -403,20 +567,20 @@
                     datasets: [{
                         label: 'إجمالي المبيعات ($)',
                         data: Object.values(itemTotals),
-                        backgroundColor: 'rgba(245, 158, 11, 0.7)',
+                        backgroundColor: 'rgba(245, 158, 11, 0.6)',
                         borderColor: 'rgba(245, 158, 11, 1)',
-                        borderWidth: 1,
-                        borderRadius: 6
+                        borderWidth: 1.5,
+                        borderRadius: 8
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
-                        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+                        y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+                        x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
                     },
-                    plugins: { legend: { labels: { color: '#f8fafc' } } }
+                    plugins: { legend: { labels: { color: '#f8fafc', font: { family: 'Cairo' } } } }
                 }
             });
         }
