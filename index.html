@@ -16,50 +16,31 @@
             font-family: 'Cairo', sans-serif; 
             background: #0f172a;
         }
-        
-        /* Smooth Transitions & Custom Scrollbar */
         * {
             transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #f59e0b;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
 
-        /* Glassmorphism Card Style */
         .glass-card {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-
         .glass-card:hover {
             border-color: rgba(245, 158, 11, 0.3);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
-
         .nav-btn.active {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #ffffff;
             box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
         }
-
-        /* Modal Animation */
         .modal-fade {
             animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95) translateY(-10px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
@@ -88,16 +69,16 @@
 
         <!-- Navigation Tabs -->
         <nav class="flex flex-wrap gap-2 bg-slate-900/60 p-1.5 rounded-2xl border border-slate-800/80">
-            <button onclick="switchTab('sales-section')" id="btn-sales" class="nav-btn active flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2">
+            <button onclick="switchTab('sales-section')" id="btn-sales" class="nav-btn active flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all flex items-center justify-center gap-2">
                 <span>📊</span> <span>المبيعات</span>
             </button>
-            <button onclick="switchTab('chart-section')" id="btn-chart" class="nav-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2">
-                <span>📈</span> <span>التحليل البياني</span>
+            <button onclick="switchTab('chart-section')" id="btn-chart" class="nav-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all flex items-center justify-center gap-2">
+                <span>📈</span> <span>التحليل البياني وساعات الذروة</span>
             </button>
-            <button onclick="switchTab('debts-section')" id="btn-debts" class="nav-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2">
+            <button onclick="switchTab('debts-section')" id="btn-debts" class="nav-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all flex items-center justify-center gap-2">
                 <span>📒</span> <span>دفتر الديون</span>
             </button>
-            <button onclick="switchTab('prices-section')" id="btn-prices" class="nav-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2">
+            <button onclick="switchTab('prices-section')" id="btn-prices" class="nav-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm text-slate-300 hover:text-white transition-all flex items-center justify-center gap-2">
                 <span>⚙️</span> <span>الأسعار والسلع</span>
             </button>
         </nav>
@@ -129,7 +110,6 @@
         <!-- ================= قسم المبيعات ================= -->
         <div id="sales-section" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Form Add Sale -->
                 <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4 lg:col-span-1 h-fit">
                     <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2">
                         <span>🛒</span> <span>تسجيل بيع جديد</span>
@@ -137,22 +117,21 @@
                     <form id="sale-form" class="space-y-3.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1.5">اختر الصنف</label>
-                            <select id="item-select" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition-colors"></select>
+                            <select id="item-select" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"></select>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1.5">الكمية</label>
-                            <input type="number" id="item-qty" min="1" value="1" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition-colors">
+                            <input type="number" id="item-qty" min="1" value="1" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                         </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-2.5 rounded-xl transition shadow-lg shadow-amber-500/10 transform active:scale-95">
+                        <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-2.5 rounded-xl transition shadow-lg shadow-amber-500/10">
                             إتمام عملية البيع
                         </button>
                     </form>
                 </div>
 
-                <!-- Sales History Table -->
                 <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4 lg:col-span-2">
                     <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
-                        <span>📊</span> <span>سجل المبيعات اللحظي</span>
+                        <span>📊</span> <span>سجل المبيعات (مع تحديد الساعة بدقة)</span>
                     </h3>
                     <div class="overflow-x-auto max-h-[420px] rounded-xl border border-slate-800">
                         <table class="w-full text-right text-sm text-slate-300">
@@ -161,7 +140,7 @@
                                     <th class="p-3">الصنف</th>
                                     <th class="p-3">الكمية</th>
                                     <th class="p-3">الإجمالي</th>
-                                    <th class="p-3">التوقيت</th>
+                                    <th class="p-3">ساعة البيع والتاريخ</th>
                                     <th class="p-3 text-center">الإجراء</th>
                                 </tr>
                             </thead>
@@ -172,11 +151,23 @@
             </div>
         </div>
 
-        <!-- ================= قسم الرسم البياني ================= -->
-        <div id="chart-section" class="tab-content hidden">
+        <!-- ================= قسم الرسم البياني وتحليل الساعات ================= -->
+        <div id="chart-section" class="tab-content hidden space-y-6">
+            <!-- بطاقات تحليل أشد وأقل الساعات مبيعاً -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass-card p-5 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent">
+                    <p class="text-xs text-amber-400 font-bold flex items-center gap-1.5"><span>🔥</span><span>أشد ساعات البيع نشاطاً (الذروة):</span></p>
+                    <h4 id="peak-hour" class="text-xl font-black text-white mt-2">لا توجد بيانات كافية</h4>
+                </div>
+                <div class="glass-card p-5 rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-800/20 to-transparent">
+                    <p class="text-xs text-slate-400 font-bold flex items-center gap-1.5"><span>💤</span><span>أقل ساعات البيع (الهدوء):</span></p>
+                    <h4 id="lowest-hour" class="text-xl font-black text-slate-300 mt-2">لا توجد بيانات كافية</h4>
+                </div>
+            </div>
+
             <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
                 <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2">
-                    <span>📈</span> <span>تحليل أداء المبيعات وحركة السلع</span>
+                    <span>📈</span> <span>تحليل المبيعات حسب الساعات والسلع</span>
                 </h2>
                 <div class="w-full h-80 md:h-96">
                     <canvas id="salesChart"></canvas>
@@ -184,7 +175,7 @@
             </div>
         </div>
 
-        <!-- ================= قسم الدين ================= -->
+        <!-- ================= قسم الديون ================= -->
         <div id="debts-section" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4 lg:col-span-1 h-fit">
@@ -194,13 +185,13 @@
                     <form id="debt-form" class="space-y-3.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1.5">اسم الزبون</label>
-                            <input type="text" id="debtor-name" placeholder="مثال: أبو علي" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-500 transition-colors">
+                            <input type="text" id="debtor-name" placeholder="مثال: أبو علي" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-500">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1.5">قيمة الدين ($)</label>
-                            <input type="number" step="0.01" id="debt-amount" placeholder="0.00" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-500 transition-colors">
+                            <input type="number" step="0.01" id="debt-amount" placeholder="0.00" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-500">
                         </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-bold py-2.5 rounded-xl transition shadow-lg shadow-rose-600/10 transform active:scale-95">
+                        <button type="submit" class="w-full bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-bold py-2.5 rounded-xl transition shadow-lg shadow-rose-600/10">
                             حفظ الدين
                         </button>
                     </form>
@@ -227,7 +218,7 @@
             </div>
         </div>
 
-        <!-- ================= قسم إدارة الأسعار والسلع ================= -->
+        <!-- ================= قسم الأسعار والسلع ================= -->
         <div id="prices-section" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4 lg:col-span-1 h-fit">
@@ -237,13 +228,13 @@
                     <form id="price-form" class="space-y-3.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1.5">اسم الصنف</label>
-                            <input type="text" id="new-item-name" placeholder="مثال: اسبريسو" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors">
+                            <input type="text" id="new-item-name" placeholder="مثال: اسبريسو" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1.5">السعر ($)</label>
-                            <input type="number" step="0.01" id="new-item-price" placeholder="2.00" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors">
+                            <input type="number" step="0.01" id="new-item-price" placeholder="2.00" required class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                         </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/10 transform active:scale-95">
+                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/10">
                             حفظ السعر
                         </button>
                     </form>
@@ -284,7 +275,7 @@
                     <select id="edit-item-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"></select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">الكمية الجديده</label>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">الكمية الجديدة</label>
                     <input type="number" id="edit-item-qty" min="1" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                 </div>
                 <div class="flex gap-2 pt-2">
@@ -295,7 +286,7 @@
         </div>
     </div>
 
-    <!-- Firebase SDK Moudles -->
+    <!-- Firebase SDK Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -343,7 +334,6 @@
             if(tabId === 'prices-section') document.getElementById('btn-prices').classList.add('active');
         };
 
-        // Firebase Sync - Prices
         onSnapshot(pricesCol, (snapshot) => {
             prices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             if (prices.length === 0) {
@@ -359,7 +349,6 @@
             renderPrices();
         });
 
-        // Firebase Sync - Sales
         onSnapshot(salesCol, (snapshot) => {
             sales = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             sales.sort((a, b) => new Date(b.dateString) - new Date(a.dateString));
@@ -367,7 +356,6 @@
             updateStats();
         });
 
-        // Firebase Sync - Debts
         onSnapshot(debtsCol, (snapshot) => {
             debts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderDebts();
@@ -409,7 +397,6 @@
             await deleteDoc(doc(pricesCol, id));
         };
 
-        // Add Sale
         document.getElementById('sale-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const [name, price] = document.getElementById('item-select').value.split('|');
@@ -417,10 +404,13 @@
             const total = qty * parseFloat(price);
             const now = new Date();
 
+            const hour = now.getHours(); // استخراج الساعة الرقمية (من 0 إلى 23)
+
             await addDoc(salesCol, {
                 name,
                 qty,
                 total,
+                hour: hour,
                 dateString: now.toISOString(),
                 formattedTime: now.toLocaleTimeString('ar-LB', { hour: '2-digit', minute: '2-digit' }),
                 formattedDate: now.toLocaleDateString('ar-LB')
@@ -428,7 +418,6 @@
             e.target.reset();
         });
 
-        // Edit & Delete Sales
         window.openEditModal = function(id) {
             const sale = sales.find(s => s.id === id);
             if(!sale) return;
@@ -443,7 +432,6 @@
                     break;
                 }
             }
-
             document.getElementById('edit-sale-modal').classList.remove('hidden');
         };
 
@@ -458,22 +446,16 @@
             const qty = parseInt(document.getElementById('edit-item-qty').value);
             const total = qty * parseFloat(price);
 
-            await updateDoc(doc(salesCol, id), {
-                name,
-                qty,
-                total
-            });
-
+            await updateDoc(doc(salesCol, id), { name, qty, total });
             closeEditModal();
         });
 
         window.deleteSale = async function(id) {
-            if(confirm("هل أنت تأكد من إلغاء عملية البيع هذه؟")) {
+            if(confirm("هل أنت متأكد من إلغاء عملية البيع هذه؟")) {
                 await deleteDoc(doc(salesCol, id));
             }
         };
 
-        // Add Debt
         document.getElementById('debt-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('debtor-name').value;
@@ -501,7 +483,7 @@
                         <td class="p-3 font-semibold text-slate-200">${s.name}</td>
                         <td class="p-3 text-slate-300 font-medium">${s.qty}</td>
                         <td class="p-3 text-emerald-400 font-bold">$${s.total.toFixed(2)}</td>
-                        <td class="p-3 text-slate-400 text-xs">${s.formattedDate} | ${s.formattedTime}</td>
+                        <td class="p-3 text-amber-300 font-semibold text-xs bg-slate-900/40 rounded px-2">${s.formattedDate} — ${s.formattedTime}</td>
                         <td class="p-3 text-center space-x-1 space-x-reverse">
                             <button onclick="openEditModal('${s.id}')" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 px-2 py-1 rounded-lg text-xs transition">تعديل</button>
                             <button onclick="deleteSale('${s.id}')" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 px-2 py-1 rounded-lg text-xs transition">حذف</button>
@@ -551,11 +533,56 @@
         }
 
         function updateChart() {
-            const itemTotals = {};
-            prices.forEach(p => itemTotals[p.name] = 0);
+            // حساب أكثر وأقل الساعات نشاطاً
+            const hourTotals = {};
+            for(let i=0; i<24; i++) hourTotals[i] = 0;
+
             sales.forEach(s => {
-                itemTotals[s.name] = (itemTotals[s.name] || 0) + s.total;
+                let h = s.hour !== undefined ? s.hour : new Date(s.dateString).getHours();
+                hourTotals[h] = (hourTotals[h] || 0) + s.total;
             });
+
+            let peakH = 0, minH = 0, maxVal = -1, minVal = Infinity;
+            let hasSales = sales.length > 0;
+
+            for(let h in hourTotals) {
+                if(hourTotals[h] > maxVal) {
+                    maxVal = hourTotals[h];
+                    peakH = h;
+                }
+            }
+
+            // إيجاد أقل ساعة بيع (من الساعات التي تم البيع فيها فعلياً أو غير الصفرية)
+            let activeHours = Object.keys(hourTotals).filter(h => hourTotals[h] > 0);
+            if(activeHours.length > 0) {
+                minVal = hourTotals[activeHours[0]];
+                minH = activeHours[0];
+                activeHours.forEach(h => {
+                    if(hourTotals[h] < minVal) {
+                        minVal = hourTotals[h];
+                        minH = h;
+                    }
+                });
+            }
+
+            const formatHourText = (h) => {
+                let hr = parseInt(h);
+                let period = hr >= 12 ? 'مساءً' : 'صباحاً';
+                let displayHr = hr % 12 === 0 ? 12 : hr % 12;
+                return `${displayHr}:00 ${period} (بإجمالي $${hourTotals[h].toFixed(2)})`;
+            };
+
+            if(hasSales && maxVal > 0) {
+                document.getElementById('peak-hour').innerText = formatHourText(peakH);
+                document.getElementById('lowest-hour').innerText = activeHours.length > 0 ? formatHourText(minH) : "لا توجد بيانات";
+            } else {
+                document.getElementById('peak-hour').innerText = "لا توجد عمليات بيع مسجلة بعد";
+                document.getElementById('lowest-hour').innerText = "لا توجد عمليات بيع مسجلة بعد";
+            }
+
+            // رسم بياني للساعات
+            const hourLabels = Object.keys(hourTotals).map(h => `${h}:00`);
+            const hourData = Object.values(hourTotals);
 
             const ctx = document.getElementById('salesChart').getContext('2d');
             if(salesChart) salesChart.destroy();
@@ -563,14 +590,14 @@
             salesChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(itemTotals),
+                    labels: hourLabels,
                     datasets: [{
-                        label: 'إجمالي المبيعات ($)',
-                        data: Object.values(itemTotals),
-                        backgroundColor: 'rgba(245, 158, 11, 0.6)',
+                        label: 'إجمالي المبيعات حسب الساعة ($)',
+                        data: hourData,
+                        backgroundColor: 'rgba(245, 158, 11, 0.65)',
                         borderColor: 'rgba(245, 158, 11, 1)',
                         borderWidth: 1.5,
-                        borderRadius: 8
+                        borderRadius: 6
                     }]
                 },
                 options: {
