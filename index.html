@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة مقهى Elcapitano</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js للرسوم البيانية -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-6">
+
+    <div class="max-w-6xl mx-auto space-y-8">
+        <!-- العنوان والساعة -->
+        <header class="flex flex-col md:flex-row justify-between items-center border-b border-slate-800 pb-4 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-amber-500">☕ إدارة مقهى ELCAPITANO</h1>
+                <p class="text-slate-400 text-sm mt-1">نظام متزامن سحابياً فورياً بين اللابتوب والهاتف</p>
+            </div>
+            <div id="live-clock" class="text-lg font-semibold bg-slate-800 px-4 py-2 rounded-lg border border-slate-700"></div>
+        </header>
+
+        <!-- التنقل بين الأقسام -->
+        <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4">
+            <button onclick="switchTab('sales-section')" id="btn-sales" class="px-5 py-2.5 rounded-lg font-bold bg-amber-600 text-white transition">📊 قسم المبيعات</button>
+            <button onclick="switchTab('chart-section')" id="btn-chart" class="px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">📈 الرسم البياني للمبيعات</button>
+            <button onclick="switchTab('debts-section')" id="btn-debts" class="px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">📒 قسم الدين</button>
+            <button onclick="switchTab('prices-section')" id="btn-prices" class="px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">⚙️ إدارة الأسعار والسلع</button>
+        </div>
+
+        <!-- لوحة المؤشرات السريعة -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                <p class="text-sm text-slate-400">مبيعات اليوم</p>
+                <h3 id="daily-sales" class="text-2xl font-bold text-emerald-400 mt-2">$0.00</h3>
+            </div>
+            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                <p class="text-sm text-slate-400">مبيعات الأسبوع</p>
+                <h3 id="weekly-sales" class="text-2xl font-bold text-blue-400 mt-2">$0.00</h3>
+            </div>
+            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                <p class="text-sm text-slate-400">مبيعات الشهر</p>
+                <h3 id="monthly-sales" class="text-2xl font-bold text-purple-400 mt-2">$0.00</h3>
+            </div>
+            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                <p class="text-sm text-slate-400">إجمالي الدين المعلق</p>
+                <h3 id="total-debts" class="text-2xl font-bold text-rose-400 mt-2">$0.00</h3>
+            </div>
+        </div>
+
+        <!-- ================= قسم المبيعات ================= -->
+        <div id="sales-section" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-1">
+                    <h2 class="text-xl font-bold text-amber-400">🛒 تسجيل عملية بيع</h2>
+                    <form id="sale-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-slate-300 mb-1">اختر الصنف</label>
+                            <select id="item-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100"></select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-300 mb-1">الكمية</label>
+                            <input type="number" id="item-qty" min="1" value="1" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+                        </div>
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 rounded-lg transition">إتمام البيع</button>
+                    </form>
+                </div>
+
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-2">
+                    <h3 class="text-lg font-bold text-slate-200">📊 سجل المبيعات اللحظي (بالساعة والدقيقة)</h3>
+                    <div class="overflow-x-auto max-h-96">
+                        <table class="w-full text-right text-sm text-slate-300">
+                            <thead class="bg-slate-700 text-amber-400 uppercase">
+                                <tr>
+                                    <th class="p-2">الصنف</th>
+                                    <th class="p-2">الكمية</th>
+                                    <th class="p-2">الإجمالي</th>
+                                    <th class="p-2">التوقيت (ساعة/دقيقة)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= قسم الرسم البياني للمبيعات ================= -->
+        <div id="chart-section" class="tab-content hidden space-y-6">
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4">
+                <h2 class="text-xl font-bold text-amber-400">📈 تحليل المبيعات (أين كانت أشدها وأقلها)</h2>
+                <div class="w-full h-96 flex justify-center items-center">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= قسم الدين ================= -->
+        <div id="debts-section" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-1">
+                    <h2 class="text-xl font-bold text-rose-400">📝 دفتر تسجيل الدين</h2>
+                    <form id="debt-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-slate-300 mb-1">اسم الزبون</label>
+                            <input type="text" id="debtor-name" placeholder="اسم الزبون..." required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-300 mb-1">قيمة الدين ($)</label>
+                            <input type="number" step="0.01" id="debt-amount" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+                        </div>
+                        <button type="submit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-lg transition">تسجيل الدين</button>
+                    </form>
+                </div>
+
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-2">
+                    <h3 class="text-lg font-bold text-slate-200">📒 قائمة الديون المعلقة على الزبائن</h3>
+                    <div class="overflow-x-auto max-h-96">
+                        <table class="w-full text-right text-sm text-slate-300">
+                            <thead class="bg-slate-700 text-rose-400 uppercase">
+                                <tr>
+                                    <th class="p-2">اسم الزبون</th>
+                                    <th class="p-2">المبلغ</th>
+                                    <th class="p-2">التاريخ والتوقيت</th>
+                                    <th class="p-2">إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="debts-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= قسم إدارة الأسعار والسلع ================= -->
+        <div id="prices-section" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-1">
+                    <h2 class="text-xl font-bold text-emerald-400">➕ إضافة أو تعديل سعر صنف</h2>
+                    <form id="price-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-slate-300 mb-1">اسم الصنف</label>
+                            <input type="text" id="new-item-name" placeholder="مثال: اسبريسو" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-300 mb-1">السعر ($)</label>
+                            <input type="number" step="0.01" id="new-item-price" placeholder="2.00" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100">
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition">حفظ السعر والصنف</button>
+                    </form>
+                </div>
+
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4 lg:col-span-2">
+                    <h3 class="text-lg font-bold text-slate-200">🏷️ قائمة السلع وأسعارها</h3>
+                    <div class="overflow-x-auto max-h-96">
+                        <table class="w-full text-right text-sm text-slate-300">
+                            <thead class="bg-slate-700 text-emerald-400 uppercase">
+                                <tr>
+                                    <th class="p-2">اسم الصنف</th>
+                                    <th class="p-2">السعر ($)</th>
+                                    <th class="p-2">إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prices-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- برمجة Firebase المباشرة السحابية -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // إعدادات مشروعك الخاصة
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2DAG1j05Lkkjj-O2uswhBSeil-U6vQzI",
+            authDomain: "elcapitano-cafe.firebaseapp.com",
+            projectId: "elcapitano-cafe",
+            storageBucket: "elcapitano-cafe.firebasestorage.app",
+            messagingSenderId: "437602827587",
+            appId: "1:437602827587:web:cb9a477d45e655260783f6",
+            measurementId: "G-M7QXGKDEXR"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // المراجع السحابية
+        const salesCol = collection(db, "sales");
+        const debtsCol = collection(db, "debts");
+        const pricesCol = collection(db, "prices");
+
+        let sales = [];
+        let debts = [];
+        let prices = [];
+        let salesChart = null;
+
+        // الساعة الحية
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleDateString('ar-LB') + ' - ' + now.toLocaleTimeString('ar-LB');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // التبديل بين الشاشات
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.getElementById('btn-sales').className = "px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+            document.getElementById('btn-chart').className = "px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+            document.getElementById('btn-debts').className = "px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+            document.getElementById('btn-prices').className = "px-5 py-2.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+
+            if(tabId === 'sales-section') document.getElementById('btn-sales').className = "px-5 py-2.5 rounded-lg font-bold bg-amber-600 text-white transition";
+            if(tabId === 'chart-section') {
+                document.getElementById('btn-chart').className = "px-5 py-2.5 rounded-lg font-bold bg-amber-600 text-white transition";
+                updateChart();
+            }
+            if(tabId === 'debts-section') document.getElementById('btn-debts').className = "px-5 py-2.5 rounded-lg font-bold bg-rose-600 text-white transition";
+            if(tabId === 'prices-section') document.getElementById('btn-prices').className = "px-5 py-2.5 rounded-lg font-bold bg-emerald-600 text-white transition";
+        };
+
+        // المزامنة اللحظية للأسعار من السحابة
+        onSnapshot(pricesCol, (snapshot) => {
+            prices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            if (prices.length === 0) {
+                // الأسعار الافتراضية
+                const defaultItems = [
+                    { name: "اسبريسو", price: 2.00 }, { name: "نسكافيه", price: 2.50 },
+                    { name: "شاي", price: 1.50 }, { name: "زهورات", price: 2.00 },
+                    { name: "حليب مع كعك", price: 3.50 }, { name: "كابتشينو", price: 3.00 },
+                    { name: "كمون وليمون", price: 2.00 }, { name: "سفن أب", price: 1.50 },
+                    { name: "ميرندا", price: 1.50 }, { name: "بيبسي", price: 1.50 }
+                ];
+                defaultItems.forEach(item => setDoc(doc(pricesCol, item.name), item));
+            }
+            renderPrices();
+        });
+
+        // المزامنة اللحظية للمبيعات من السحابة
+        onSnapshot(salesCol, (snapshot) => {
+            sales = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            sales.sort((a, b) => new Date(b.dateString) - new Date(a.dateString));
+            renderSales();
+            updateStats();
+        });
+
+        // المزامنة اللحظية للديون من السحابة
+        onSnapshot(debtsCol, (snapshot) => {
+            debts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderDebts();
+            updateStats();
+        });
+
+        function renderPrices() {
+            const tbody = document.getElementById('prices-table-body');
+            const select = document.getElementById('item-select');
+            tbody.innerHTML = '';
+            select.innerHTML = '';
+
+            prices.forEach(p => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-2 font-medium">${p.name}</td>
+                        <td class="p-2 text-emerald-400">$${parseFloat(p.price).toFixed(2)}</td>
+                        <td class="p-2">
+                            <button onclick="deletePrice('${p.id}')" class="bg-rose-600 hover:bg-rose-500 text-white px-2 py-1 rounded text-xs">حذف</button>
+                        </td>
+                    </tr>`;
+                select.innerHTML += `<option value="${p.name}|${p.price}">${p.name} ($${parseFloat(p.price).toFixed(2)})</option>`;
+            });
+        }
+
+        // حفظ صنف أو تعديل سعره سحابياً
+        document.getElementById('price-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('new-item-name').value.trim();
+            const price = parseFloat(document.getElementById('new-item-price').value);
+            await setDoc(doc(pricesCol, name), { name, price });
+            e.target.reset();
+        });
+
+        window.deletePrice = async function(id) {
+            await deleteDoc(doc(pricesCol, id));
+        };
+
+        // إضافة عملية بيع سحابياً
+        document.getElementById('sale-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const [name, price] = document.getElementById('item-select').value.split('|');
+            const qty = parseInt(document.getElementById('item-qty').value);
+            const total = qty * parseFloat(price);
+            const now = new Date();
+
+            await addDoc(salesCol, {
+                name,
+                qty,
+                total,
+                dateString: now.toISOString(),
+                formattedTime: now.toLocaleTimeString('ar-LB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                formattedDate: now.toLocaleDateString('ar-LB')
+            });
+            e.target.reset();
+        });
+
+        // إضافة دين سحابياً
+        document.getElementById('debt-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('debtor-name').value;
+            const amount = parseFloat(document.getElementById('debt-amount').value);
+            const now = new Date();
+
+            await addDoc(debtsCol, {
+                name,
+                amount,
+                formattedTime: now.toLocaleDateString('ar-LB') + ' ' + now.toLocaleTimeString('ar-LB', { hour: '2-digit', minute: '2-digit' })
+            });
+            e.target.reset();
+        });
+
+        window.deleteDebt = async function(id) {
+            await deleteDoc(doc(debtsCol, id));
+        };
+
+        function renderSales() {
+            const tbody = document.getElementById('sales-table-body');
+            tbody.innerHTML = '';
+            sales.forEach(s => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-2 font-medium">${s.name}</td>
+                        <td class="p-2">${s.qty}</td>
+                        <td class="p-2 text-emerald-400">$${s.total.toFixed(2)}</td>
+                        <td class="p-2 text-slate-400 text-xs">${s.formattedDate} | ${s.formattedTime}</td>
+                    </tr>`;
+            });
+        }
+
+        function renderDebts() {
+            const tbody = document.getElementById('debts-table-body');
+            tbody.innerHTML = '';
+            debts.forEach(d => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-2 font-medium">${d.name}</td>
+                        <td class="p-2 text-rose-400">$${d.amount.toFixed(2)}</td>
+                        <td class="p-2 text-slate-400 text-xs">${d.formattedTime}</td>
+                        <td class="p-2">
+                            <button onclick="deleteDebt('${d.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2 py-1 rounded text-xs">تم السداد</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function updateStats() {
+            const now = new Date();
+            const todayStr = now.toLocaleDateString('ar-LB');
+
+            const dailyTotal = sales.filter(s => s.formattedDate === todayStr).reduce((acc, curr) => acc + curr.total, 0);
+            document.getElementById('daily-sales').innerText = `$${dailyTotal.toFixed(2)}`;
+
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            const monthlyTotal = sales.filter(s => {
+                const d = new Date(s.dateString);
+                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+            }).reduce((acc, curr) => acc + curr.total, 0);
+            document.getElementById('monthly-sales').innerText = `$${monthlyTotal.toFixed(2)}`;
+
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(now.getDate() - 7);
+            const weeklyTotal = sales.filter(s => new Date(s.dateString) >= oneWeekAgo).reduce((acc, curr) => acc + curr.total, 0);
+            document.getElementById('weekly-sales').innerText = `$${weeklyTotal.toFixed(2)}`;
+
+            const totalDebts = debts.reduce((acc, curr) => acc + curr.amount, 0);
+            document.getElementById('total-debts').innerText = `$${totalDebts.toFixed(2)}`;
+        }
+
+        function updateChart() {
+            const itemTotals = {};
+            prices.forEach(p => itemTotals[p.name] = 0);
+            sales.forEach(s => {
+                itemTotals[s.name] = (itemTotals[s.name] || 0) + s.total;
+            });
+
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            if(salesChart) salesChart.destroy();
+
+            salesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(itemTotals),
+                    datasets: [{
+                        label: 'إجمالي المبيعات ($)',
+                        data: Object.values(itemTotals),
+                        backgroundColor: 'rgba(245, 158, 11, 0.7)',
+                        borderColor: 'rgba(245, 158, 11, 1)',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+                    },
+                    plugins: { legend: { labels: { color: '#f8fafc' } } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
